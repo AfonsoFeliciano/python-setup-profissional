@@ -547,4 +547,4 @@ Isso não é só instalar ferramenta. É começar a trabalhar com Python de um j
 
 ---
 
-> Material desenvolvido por Iago Barros · [Xperiun](https://xperiun.com) · Pós-graduação em Engenharia de Dados
+> Material desenvolvido por Iago Braz · [Linkedin](https://www.linkedin.com/in/iagobraz/) [Xperiun](https://xperiun.com) · Pós-graduação em Engenharia de Dados
