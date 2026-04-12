@@ -119,7 +119,7 @@ Entendendo cada comando:
 - `pyenv install 3.10.11` — instala o Python 3.10.11. Não substitui nada: fica disponível ao lado de outras versões.
 - `pyenv install 3.12.0` — instala o Python 3.12.0. As duas versões coexistem.
 - `pyenv versions` — lista todas as versões instaladas via pyenv.
-- `pyenv global 3.12.0` — define a versão padrão da máquina. É o Python que vai ser usado quando você não estiver dentro de um projeto com versão específica.
+- `pyenv global 3.12.0` — define a versão padrão da máquina. É o Python usado quando você não está dentro de um projeto com versão específica.
 - `python --version` — confirma qual versão está ativa. O esperado é `Python 3.12.0`.
 
 ---
@@ -147,35 +147,23 @@ python --version
 
 O que está acontecendo:
 
-- `mkdir projeto-a` e `mkdir projeto-b` — criam duas pastas que vão simular dois projetos diferentes
 - `pyenv local 3.10.11` — dentro de `projeto-a`, define que a versão do Python será a 3.10.11. O pyenv cria um arquivo `.python-version` com essa informação.
 - `python --version` dentro de `projeto-a` — deve retornar `Python 3.10.11`
-- `pyenv local 3.12.0` — dentro de `projeto-b`, define uma versão diferente
 - `python --version` dentro de `projeto-b` — deve retornar `Python 3.12.0`
-- `python --version` fora das pastas — volta para a versão global definida anteriormente
+- `python --version` fora das pastas — volta para a versão global
 
-O ponto central aqui é este: **cada projeto decide qual versão do Python ele usa**, sem depender do que está instalado globalmente na máquina.
+O ponto central: **cada projeto decide qual versão do Python ele usa**, sem depender do que está instalado globalmente na máquina.
 
 ---
 
 ## 6. Criando um ambiente virtual com venv
 
-Mesmo que dois projetos usem a mesma versão do Python, eles podem precisar de bibliotecas completamente diferentes.
-
-Exemplo:
-- um projeto usa `pandas`
-- outro usa `streamlit`
-- outro usa `requests` e `sqlalchemy`
-
-Se tudo isso for instalado junto e sem separação, vira bagunça. Você perde o controle do que pertence a quê.
-
-É por isso que usamos ambientes virtuais.
+Mesmo que dois projetos usem a mesma versão do Python, eles podem precisar de bibliotecas completamente diferentes. É por isso que usamos ambientes virtuais.
 
 ### O que é um ambiente virtual?
 
 Um ambiente virtual é um espaço isolado para as dependências de um projeto específico.
 
-Pense assim:
 - o Python é o motor
 - o ambiente virtual é a garagem daquele projeto
 - as bibliotecas ficam ali dentro, separadas de tudo
@@ -191,7 +179,7 @@ venv\Scripts\activate
 - `python -m venv venv` — cria o ambiente virtual. O segundo `venv` é o nome da pasta criada.
 - `venv\Scripts\activate` — ativa o ambiente no Windows. Quando ativado, o terminal passa a mostrar `(venv)` no início da linha.
 
-Esse detalhe do `(venv)` é importante. Ele indica que você está dentro do ambiente isolado daquele projeto.
+Esse `(venv)` indica que você está dentro do ambiente isolado daquele projeto.
 
 ---
 
@@ -202,22 +190,15 @@ Com o ambiente ativado:
 ```bash
 pip install pandas
 pip freeze
-```
-
-- `pip install pandas` — instala o pandas dentro do ambiente virtual ativo. Fica vinculado a esse projeto.
-- `pip freeze` — lista todos os pacotes instalados no ambiente.
-
-Aqui tem um ponto importante para você observar: mesmo instalando só o `pandas`, o `pip freeze` vai mostrar vários pacotes. Isso acontece porque o pandas depende de outras bibliotecas para funcionar. Você pediu uma, o sistema instalou ela e todas as dependências necessárias.
-
-Por que isso merece atenção? Porque, com o tempo, usar só `pip install` e `pip freeze` pode deixar o ambiente menos claro. Você começa a acumular dependências sem saber o que foi escolha sua e o que entrou por tabela.
-
-É justamente por isso que vamos usar uma ferramenta mais moderna: o `uv`.
-
-Para sair do ambiente:
-
-```bash
 deactivate
 ```
+
+- `pip install pandas` — instala o pandas dentro do ambiente virtual ativo.
+- `pip freeze` — lista todos os pacotes instalados no ambiente.
+
+**Observação importante:** mesmo instalando só o `pandas`, o `pip freeze` vai mostrar vários pacotes. Isso acontece porque o pandas depende de outras bibliotecas. Você pediu uma, o sistema instalou ela e todas as dependências necessárias.
+
+Com o tempo, usar só `pip install` e `pip freeze` pode deixar o ambiente confuso — você acumula dependências sem saber o que foi escolha sua e o que entrou por tabela. É justamente por isso que vamos usar o `uv`.
 
 ---
 
@@ -228,58 +209,32 @@ pip install pipx
 python -m pipx ensurepath
 ```
 
-Depois disso, **feche e reabra o terminal do VSCode**.
+**Feche e reabra o terminal do VSCode depois desse passo.**
 
 ### O que é o pipx?
 
-O `pipx` serve para instalar ferramentas Python de terminal de forma isolada.
-
-A diferença é essa:
-
-- **bibliotecas de projeto** — `pandas`, `requests`, `numpy` — você instala dentro do ambiente virtual
-- **ferramentas de terminal** — `uv`, `black`, `ruff` — você instala com o `pipx`
-
-Isso evita bagunçar o ambiente principal com ferramentas que você quer usar globalmente.
+O `pipx` serve para instalar ferramentas Python de terminal de forma isolada, sem misturar com os pacotes dos seus projetos.
 
 ---
 
 ## 9. Instalando o uv
 
-Você pode instalar de duas formas:
-
-Forma simples:
 ```bash
 pip install uv
-```
-
-Forma mais organizada:
-```bash
-pipx install uv
-```
-
-Depois:
-```bash
 uv --version
 ```
 
 ### O que é o uv?
 
-O `uv` é uma ferramenta moderna para gerenciar projetos Python. Ele cuida de:
+O `uv` é uma ferramenta moderna para gerenciar projetos Python. Ele cuida de ambiente virtual, dependências, execução do projeto e sincronização do ambiente — tudo em um lugar só.
 
-- ambiente virtual
-- dependências
-- execução do projeto
-- sincronização do ambiente
-- estrutura do `pyproject.toml`
-
-Em vez de juntar `venv`, `pip`, `pip freeze` e `requirements.txt` manualmente, o `uv` organiza tudo isso de forma mais limpa e mais profissional.
+Em vez de juntar `venv`, `pip`, `pip freeze` e `requirements.txt` manualmente, o `uv` organiza tudo de forma mais limpa e profissional.
 
 ---
 
 ## 10. Criando um projeto com uv
 
 ```bash
-cd E:\Iago\Desktop
 uv init projeto-final
 cd projeto-final
 uv add pandas
@@ -290,34 +245,25 @@ uv add python-dotenv
 - `uv init projeto-final` — cria o projeto e monta a estrutura inicial
 - `uv add pandas` — adiciona o pandas como dependência oficial do projeto
 
-A diferença do `uv add` para o `pip install` é importante: você está **declarando** que o projeto depende daquela biblioteca, e não apenas instalando algo. Isso fica registrado no projeto de forma que qualquer pessoa que clonar consiga reproduzir o mesmo ambiente.
-
-O mesmo vale para `requests` e `python-dotenv`.
+A diferença do `uv add` para o `pip install`: você está **declarando** que o projeto depende daquela biblioteca. Isso fica registrado de forma que qualquer pessoa que clonar consiga reproduzir o mesmo ambiente.
 
 ---
 
 ## 11. Entendendo o pyproject.toml
 
-No Git Bash:
 ```bash
+# No Git Bash
 cat pyproject.toml
-```
 
-No PowerShell:
-```powershell
+# No PowerShell
 Get-Content pyproject.toml
 ```
 
 ### O que é esse arquivo?
 
-O `pyproject.toml` é o arquivo central de projetos Python modernos.
+O `pyproject.toml` é o arquivo central de projetos Python modernos. Ele guarda nome, versão e dependências do projeto — apenas o que você declarou, sem dependências automáticas poluindo a lista.
 
-Ele guarda:
-- nome e versão do projeto
-- dependências declaradas
-- configurações de ferramentas
-
-Pense nele como a identidade do projeto. É onde tudo fica registrado de forma clara, em um único lugar.
+Compare com o `pip freeze`: lá aparecem 6 pacotes para 1 instalado. Aqui aparecem só os que você pediu.
 
 ---
 
@@ -327,19 +273,11 @@ Pense nele como a identidade do projeto. É onde tudo fica registrado de forma c
 .venv\Scripts\Activate.ps1
 ```
 
-### O que é a pasta `.venv`?
-
-É o ambiente virtual criado pelo `uv` para o projeto.
-
-Quando você ativa esse ambiente, tudo o que for executado passa a usar o contexto daquele projeto: Python, bibliotecas e configurações.
-
-Esse isolamento é o que garante que o projeto roda de forma previsível — tanto na sua máquina quanto na do colega.
+O `uv` cria automaticamente a pasta `.venv` ao iniciar o projeto. Quando você ativa esse ambiente, tudo o que for executado passa a usar o contexto daquele projeto.
 
 ---
 
 ## 13. Variáveis de ambiente e o arquivo .env
-
-Crie o arquivo:
 
 ```powershell
 New-Item .env
@@ -355,31 +293,19 @@ DB_PASSWORD=senha-super-secreta-123
 API_KEY=ghp_chave-fake-para-teste
 ```
 
-### O que são variáveis de ambiente?
-
-São valores externos ao código que configuram a aplicação.
-
-Exemplos comuns: host de banco, usuário, senha, token de API, chave de acesso, nome do ambiente.
-
 ### Por que isso existe?
 
 Porque nem tudo deve ficar escrito diretamente no código.
 
-Veja um exemplo ruim:
-
+❌ Forma errada:
 ```python
 senha = "minha-senha-real"
 ```
 
-Isso é ruim porque expõe informação sensível, dificulta a troca de ambiente, e pode ir parar no GitHub sem você perceber.
-
-Agora veja a forma certa:
-
+✅ Forma certa:
 ```python
 senha = os.getenv("DB_PASSWORD")
 ```
-
-O código não carrega o valor diretamente. Ele apenas pede o valor pelo nome da variável.
 
 A lógica é simples:
 - o código diz **o que precisa** → `DB_HOST`, `DB_USER`, `DB_PASSWORD`
@@ -391,7 +317,7 @@ Isso deixa o código mais limpo, mais seguro e mais fácil de adaptar para ambie
 
 ## 14. Lendo o .env com Python
 
-Crie ou edite o `main.py`:
+Edite o `main.py`:
 
 ```python
 from dotenv import load_dotenv
@@ -408,14 +334,8 @@ print(f"Conectando em {db_host} com usuário {db_user}")
 print("Credenciais carregadas com sucesso!")
 ```
 
-Entendendo linha por linha:
-
-- `from dotenv import load_dotenv` — importa a função que sabe ler o `.env`
-- `import os` — importa o módulo que permite acessar variáveis de ambiente
 - `load_dotenv()` — carrega o conteúdo do `.env` e disponibiliza para o Python
-- `os.getenv("DB_HOST")` — busca o valor da variável `DB_HOST`. Se existir, retorna o valor. Se não existir, retorna `None`.
-
-O que esse código está mostrando é que seu código pode continuar limpo, enquanto os valores sensíveis ficam fora dele. Esse é um comportamento fundamental em projetos reais.
+- `os.getenv("DB_HOST")` — busca o valor da variável. Se não existir, retorna `None`.
 
 ---
 
@@ -424,8 +344,6 @@ O que esse código está mostrando é que seu código pode continuar limpo, enqu
 ```bash
 uv run main.py
 ```
-
-O `uv run` executa o arquivo dentro do contexto correto do projeto — usando o ambiente, as dependências e o Python do projeto.
 
 Saída esperada:
 
@@ -449,9 +367,7 @@ Abra o `.gitignore` gerado pelo projeto e adicione:
 
 É um arquivo que diz ao Git: "esses arquivos não devem ser versionados."
 
-Por que ignorar o `.env`? Porque ele pode conter senhas, chaves, tokens e acessos sensíveis. Esse tipo de informação não deve ir para o repositório.
-
-Essa é uma das primeiras coisas que qualquer profissional faz ao iniciar um projeto.
+O `.env` pode conter senhas, chaves e tokens. Esse tipo de informação não deve ir para o repositório. Essa é uma das primeiras coisas que qualquer profissional faz ao iniciar um projeto.
 
 ---
 
@@ -465,19 +381,20 @@ git status
 ```
 
 - `git init` — transforma a pasta em um repositório Git
-- `git status` — mostra o estado atual dos arquivos. Você vai usar esse comando o tempo todo.
+- `git status` — mostra o estado atual dos arquivos
 - `git add .` — adiciona os arquivos para a área de preparação do commit
 
-Como o `.env` está no `.gitignore`, ele deve ficar de fora. Esse é exatamente o comportamento esperado.
+Como o `.env` está no `.gitignore`, ele fica de fora. Esse é exatamente o comportamento esperado.
 
 ---
 
 ## 18. Primeiro commit e envio para o GitHub
 
 ```bash
+git add .
 git commit -m "Setup inicial do projeto profissional"
 git branch -M main
-git remote add origin https://github.com/iagoxperiun/projeto-final.git
+git remote add origin https://github.com/seu-usuario/projeto-final.git
 git pull origin main --allow-unrelated-histories
 git push -u origin main
 ```
@@ -485,50 +402,38 @@ git push -u origin main
 - `git commit -m "..."` — cria um registro da versão atual do projeto
 - `git branch -M main` — define a branch principal como `main`
 - `git remote add origin ...` — conecta o projeto local ao repositório remoto no GitHub
-- `git pull origin main --allow-unrelated-histories` — puxa o histórico remoto antes de subir, útil quando o repositório já foi criado com algum arquivo inicial
-- `git push -u origin main` — envia o projeto local para o GitHub
+- `git pull origin main --allow-unrelated-histories` — necessário quando o repositório já foi criado com algum arquivo inicial no GitHub
+- `git push -u origin main` — envia o projeto para o GitHub
 
 ### O que verificar no GitHub depois do envio
 
-Devem estar lá:
-- `main.py`
-- `pyproject.toml`
-- `.gitignore`
+✅ Deve estar lá: `main.py`, `pyproject.toml`, `.gitignore`, `uv.lock`
 
-Não deve estar lá:
-- `.env`
+❌ Não deve estar lá: `.env`
 
-Se o `.env` não apareceu, significa que você protegeu corretamente suas credenciais.
+Se o `.env` não apareceu, você protegeu corretamente suas credenciais.
 
 ---
 
 ## 19. Simulando o colega que clona o projeto
 
-Agora vamos simular outra pessoa pegando esse repositório.
-
 ```bash
 deactivate
-cd E:\Iago\Desktop
-git clone https://github.com/iagoxperiun/projeto-final.git projeto-colega
+git clone https://github.com/seu-usuario/projeto-final.git projeto-colega
 cd projeto-colega
 uv sync
 uv run main.py
 ```
 
-- `git clone ...` — baixa o repositório como se fosse outra pessoa
 - `uv sync` — sincroniza o ambiente com as dependências declaradas no `pyproject.toml`
 - `uv run main.py` — executa o projeto
 
-O `.env` não veio com o clone. Então, ao rodar, alguns valores provavelmente vão aparecer como `None`.
-
-Isso é esperado — e é exatamente o comportamento correto.
+O `.env` não veio com o clone. Ao rodar, os valores vão aparecer como `None`. Isso é esperado — e é exatamente o comportamento correto.
 
 O que isso demonstra:
-- o código foi compartilhado
-- as dependências foram compartilhadas
-- as credenciais não foram compartilhadas
-
-Esse é o fluxo real de trabalho em equipe.
+- o código foi compartilhado ✅
+- as dependências foram compartilhadas ✅
+- as credenciais não foram compartilhadas ✅
 
 ---
 
@@ -559,11 +464,7 @@ Conectando em servidor.banco.com com usuário colega
 Credenciais carregadas com sucesso!
 ```
 
-O que esse último passo ensina:
-- o projeto é reproduzível
-- outro colega consegue clonar e rodar
-- o ambiente é padronizado
-- cada pessoa mantém suas próprias credenciais
+Mesmo projeto. Máquinas diferentes. Credenciais diferentes. Tudo funcionando.
 
 ---
 
@@ -578,11 +479,9 @@ DB_PASSWORD=
 API_KEY=
 ```
 
-Esse arquivo **pode** subir para o GitHub, porque não expõe valores reais.
+Esse arquivo **pode** subir para o GitHub — não expõe valores reais.
 
 Ele serve para mostrar quais variáveis o projeto precisa. Quando outro colega clonar o repositório, ele sabe exatamente o que deve criar no próprio `.env`.
-
-É uma prática simples que evita muito retrabalho e pergunta desnecessária.
 
 ---
 
@@ -590,7 +489,7 @@ Ele serve para mostrar quais variáveis o projeto precisa. Quando outro colega c
 
 ### "pyenv não é reconhecido como comando"
 
-Feche e reabra o terminal. Se o problema persistir, verifique se as variáveis de ambiente do sistema foram configuradas. O instalador do pyenv-win faz isso automaticamente, mas às vezes é necessário reiniciar o computador.
+Feche e reabra o terminal. Se o problema persistir, verifique se as variáveis de ambiente foram configuradas. Às vezes é necessário reiniciar o computador.
 
 ### "A execução de scripts está desabilitada neste sistema"
 
@@ -600,11 +499,9 @@ Abra o PowerShell como Administrador e execute:
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-Isso libera a execução de scripts assinados no seu usuário.
+### "uv não é reconhecido após instalação"
 
-### "uv não é reconhecido após instalação com pipx"
-
-Certifique-se de que rodou `python -m pipx ensurepath` e reabriu o terminal depois. Se ainda não funcionar, tente instalar com `pip install uv` diretamente.
+Use `pip install uv` diretamente — foi o método que funcionou no Windows durante os testes.
 
 ### "venv\Scripts\activate não funciona no PowerShell"
 
@@ -614,11 +511,25 @@ Use:
 .venv\Scripts\Activate.ps1
 ```
 
-Se ainda assim não funcionar, verifique a política de execução de scripts com o item acima.
+### "O repositório já tem conteúdo e o push foi rejeitado"
+
+Execute antes do push:
+
+```bash
+git pull origin main --allow-unrelated-histories
+```
+
+Depois repita o `git push`.
 
 ### "O .env subiu para o GitHub"
 
-Se você percebeu isso depois do push, remova o arquivo do histórico com `git rm --cached .env`, adicione ao `.gitignore`, faça um novo commit e suba. Troque todas as credenciais que estavam no arquivo — considere que elas foram expostas.
+Remova o arquivo do histórico:
+
+```bash
+git rm --cached .env
+```
+
+Adicione ao `.gitignore`, faça um novo commit e suba. Troque todas as credenciais que estavam no arquivo — considere que elas foram expostas.
 
 ---
 
